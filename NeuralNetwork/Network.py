@@ -1,6 +1,13 @@
 import numpy as np
 
 
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
+def sigmoid_derivative(x):
+    return sigmoid(x) * (1 - sigmoid(x))
+
 class NeuralNetwork:
     def __init__(self, inputnode, output, hiddennode, lernkf):
         # количество входных нейронов
@@ -18,8 +25,8 @@ class NeuralNetwork:
 
     # return error
     def train(self, inputs, target):
-        inputs = np.array(inputs)
-        target = np.array(target)
+        inputs = np.array(inputs, ndmin=2).T
+        target = np.array(target, ndmin=2).T
         # прямой ход
         hidden_inputs = np.dot(self.WHiddenIn, inputs)
         hidden_outputs = self.activation_function(hidden_inputs)
@@ -33,7 +40,7 @@ class NeuralNetwork:
         self.WOutHidden += self.lk * np.dot(error * res * (1 - res), hidden_outputs.T)
         # изменение весов скрытого слоя
         self.WHiddenIn += self.lk * np.dot(hid_error * hidden_outputs * (1 - hidden_outputs), inputs.T)
-        return (sum(error ** 2))**0.5
+        return (sum(error ** 2) / len(error)) ** 0.5
 
     def query(self, inputs):
         hidden_inputs = np.dot(self.WHiddenIn, inputs)
